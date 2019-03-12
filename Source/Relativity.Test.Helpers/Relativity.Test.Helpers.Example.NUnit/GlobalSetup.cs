@@ -20,18 +20,21 @@ namespace Relativity.Test.Helpers.Example
 
 		public int ClientID;
 		public int MatterID;
+		public int AgentID;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
 			Initialize();
-			CreateWorkspace();
+			//CreateWorkspace();
+			CreateAgent();
 		}
 
 		[OneTimeTearDown]
 		public void OneTimeTearDown()
 		{
-			DeleteWorkspace();
+			//DeleteWorkspace();
+			DeleteAgent();
 		}
 
 		public void Initialize()
@@ -41,6 +44,8 @@ namespace Relativity.Test.Helpers.Example
 			ObjectHelper = ObjectFactory.ObjectHelperInstance(TestHelper);
 		}
 
+		#region Workspace
+		
 		public void CreateWorkspace()
 		{
 			ClientID = ObjectHelper.Client.Create("Example Client");
@@ -55,5 +60,23 @@ namespace Relativity.Test.Helpers.Example
 			ObjectHelper.Matter.Delete(MatterID);
 			ObjectHelper.Client.Delete(ClientID);
 		}
+
+		#endregion Workspace
+
+		#region Agent
+
+		public void CreateAgent()
+		{
+			var agentTypeResponse = ObjectHelper.Agent.ReadAgentTypeByName("Case Manager");
+			var agentServerResponse = ObjectHelper.Agent.ReadAgentServerByAgentType(agentTypeResponse.ArtifactID);
+			AgentID = ObjectHelper.Agent.Create(agentTypeResponse.ArtifactID, agentServerResponse.ArtifactID);
+		}
+
+		public void DeleteAgent()
+		{
+			ObjectHelper.Agent.Delete(AgentID);
+		}
+
+		#endregion Agent
 	}
 }

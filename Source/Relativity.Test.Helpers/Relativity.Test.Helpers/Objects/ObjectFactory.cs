@@ -15,7 +15,8 @@
 				User = new User.UserHelper(helper),
 				Matter = new Matter.MatterHelper(helper),
 				RDO = new RDO.RDOHelper(helper),
-				Field = new Field.FieldHelper(helper)
+				Field = new Field.FieldHelper(helper),
+				Agent = new Agent.AgentHelper(helper)
 			};
 
 			return objectHelper;

@@ -24,14 +24,17 @@ namespace Relativity.Test.Helpers.Objects.Agent
 		/// Returns a list of all available agent types.
 		/// </summary>
 		/// <returns></returns>
-		public List<AgentTypeResponse> ReadAgentTypes()
+		public AgentTypeResponse ReadAgentTypeByName(string name)
 		{
 			List<AgentTypeResponse> agentTypes = null;
 			using (var agentManager = _helper.GetServicesManager().CreateProxy<Services.Interfaces.Agent.IAgentManager>(ExecutionIdentity.System))
 			{
 				agentTypes = agentManager.GetAgentTypesAsync(-1).Result;
 			}
-			return agentTypes;
+
+			var selectedAgentType = agentTypes.FirstOrDefault(a => a.Name == name);
+
+			return selectedAgentType;
 		}
 
 		/// <summary>
@@ -54,12 +57,12 @@ namespace Relativity.Test.Helpers.Objects.Agent
 		/// <param name="agentType"></param>
 		/// <param name="agentServerRef"></param>
 		/// <returns></returns>
-		public int Create(AgentTypeRef agentTypeRef, ResourceServerRef agentServerRef)
+		public int Create(int agentTypeID, int agentServerID)
 		{
 			int agentID = -1;
 
-			var agentType = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = agentTypeRef.ArtifactID });
-			var agentServer = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = agentServerRef.ArtifactID });
+			var agentType = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = agentTypeID });
+			var agentServer = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = agentServerID });
 			var agentToCreate = new AgentRequest()
 			{
 				AgentType = agentType,

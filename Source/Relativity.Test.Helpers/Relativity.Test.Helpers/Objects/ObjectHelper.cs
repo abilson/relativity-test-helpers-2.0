@@ -12,6 +12,7 @@
 		public Matter.MatterHelper Matter { get; set; }
 		public RDO.RDOHelper RDO { get; set; }
 		public Field.FieldHelper Field { get; set; }
+		public Agent.AgentHelper Agent { get; set; }
 
 		// only create via factory method
 		internal ObjectHelper()	{	}
