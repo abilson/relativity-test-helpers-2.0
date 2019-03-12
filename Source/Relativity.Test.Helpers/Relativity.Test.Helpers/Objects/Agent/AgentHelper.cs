@@ -3,7 +3,9 @@ using Relativity.Services.Agent;
 using Relativity.Services.Interfaces.Agent;
 using Relativity.Services.Interfaces.Agent.Models;
 using Relativity.Services.ResourceServer;
+using Relativity.Services.Interfaces.Shared.Models;
 using System;
+using Relativity.Services.Interfaces.Shared;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,19 +35,17 @@ namespace Relativity.Test.Helpers.Objects.Agent
 		}
 
 		/// <summary>
-		/// Returns the first resource server where type is equal to 'Agent'
+		/// Returns the first server compatible with the agent type.
 		/// </summary>
 		/// <returns></returns>
-		public AgentServerResponse ReadAgentServer()
+		public AgentServerResponse ReadAgentServerByAgentType(int agentTypeID)
 		{
 			List<AgentServerResponse> resourceServers = null;
 			using (var agentManager = _helper.GetServicesManager().CreateProxy<Services.Interfaces.Agent.IAgentManager>(ExecutionIdentity.System))
 			{
-				resourceServers = agentManager.GetAgentServersAsync(-1).Result;
+				resourceServers = agentManager.GetAvailableAgentServersAsync(-1, agentTypeID).Result;
 			}
-
-			var agentServers = resourceServers.Where(s => s.Type == "Agent");
-			return agentServers.First();
+			return resourceServers.FirstOrDefault();
 		}
 
 		/// <summary>
@@ -54,34 +54,53 @@ namespace Relativity.Test.Helpers.Objects.Agent
 		/// <param name="agentType"></param>
 		/// <param name="agentServerRef"></param>
 		/// <returns></returns>
-		public int Create(AgentTypeRef agentType, ResourceServerRef agentServerRef)
+		public int Create(AgentTypeRef agentTypeRef, ResourceServerRef agentServerRef)
 		{
 			int agentID = -1;
+
+			var agentType = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = agentTypeRef.ArtifactID });
+			var agentServer = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = agentServerRef.ArtifactID });
+			var agentToCreate = new AgentRequest()
+			{
+				AgentType = agentType,
+				Enabled = true,
+				Interval = 5,
+				AgentServer = agentServer,
+				Keywords = "Integration Test Agent",
+				LoggingLevel = 1
+			};
+
 			using (var agentManager = _helper.GetServicesManager().CreateProxy<Services.Interfaces.Agent.IAgentManager>(ExecutionIdentity.System))
 			{
-				/*
-				var agentDto = new AgentRequest()
+				// Confirms an agent may be created
+				List<AgentInstanceLimitResult> results = agentManager.ValidateCreateInstanceLimitAsync(-1, agentToCreate, 1).Result;
+				foreach (var result in results)
 				{
-					AgentType = agentType,
-					Enabled = true,
-					Interval = 5,
-					Server = agentServerRef,
-					Keywords = "Integration",
-					LoggingLevel = Agent.LoggingLevelEnum.Critical
-				};
-				agentID = agentManager.CreateAsync(-1, agentDto).Result;
-				*/
+					Console.WriteLine(result.Limit.ToString());
+				}
+
+				agentID = agentManager.CreateAsync(-1, agentToCreate).Result;
 			}
 			return agentID;
 		}
 
 		/// <summary>
-		/// Deprecated: Needs update to newest Agent Manager API
+		/// Deletes an agent by ID.
 		/// </summary>
 		/// <param name="agentID"></param>
 		public void Delete(int agentID)
 		{
-			throw new NotImplementedException();
+			using (var agentManager = _helper.GetServicesManager().CreateProxy<Services.Interfaces.Agent.IAgentManager>(ExecutionIdentity.System))
+			{
+				// Confirms an agent may be deleted
+				List<AgentInstanceLimitResult> results = agentManager.ValidateDeleteInstanceLimitAsync(-1, agentID).Result;
+				foreach (var result in results)
+				{
+					Console.WriteLine(result.Limit.ToString());
+				}
+
+				agentManager.DeleteAsync(-1, agentID).Wait();
+			}
 		}
 	}
 }
