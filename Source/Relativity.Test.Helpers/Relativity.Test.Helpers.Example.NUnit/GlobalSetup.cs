@@ -22,18 +22,24 @@ namespace Relativity.Test.Helpers.Example
 		public int MatterID;
 		public int AgentID;
 
+		public string ClientName = "Example Client";
+		public string MatterName = "Example Matter";
+		public string AgentName = "Case Manager";
+		public string ApplicationName = "Test App";
+
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
 			Initialize();
-			//CreateWorkspace();
+			CreateWorkspace();
+			InstallApplication();
 			CreateAgent();
 		}
 
 		[OneTimeTearDown]
 		public void OneTimeTearDown()
 		{
-			//DeleteWorkspace();
+			DeleteWorkspace();
 			DeleteAgent();
 		}
 
@@ -48,8 +54,8 @@ namespace Relativity.Test.Helpers.Example
 		
 		public void CreateWorkspace()
 		{
-			ClientID = ObjectHelper.Client.Create("Example Client");
-			MatterID = ObjectHelper.Matter.Create("Example Matter", ClientID);
+			ClientID = ObjectHelper.Client.Create(ClientName);
+			MatterID = ObjectHelper.Matter.Create(MatterName, ClientID);
 			var templateWorkspaceDto = ObjectHelper.Workspace.ReadTemplateWorkspace();
 			LocalConfig.WorkspaceID = ObjectHelper.Workspace.Create(LocalConfig.WorkspaceName, ClientID, MatterID, templateWorkspaceDto);
 		}
@@ -63,11 +69,20 @@ namespace Relativity.Test.Helpers.Example
 
 		#endregion Workspace
 
+		#region Application
+
+		public void InstallApplication()
+		{
+			ObjectHelper.Application.Import(LocalConfig.WorkspaceID, true, LocalConfig.ApplicationRAPPath, ApplicationName);
+		}
+
+		#endregion Application
+
 		#region Agent
 
 		public void CreateAgent()
 		{
-			var agentTypeResponse = ObjectHelper.Agent.ReadAgentTypeByName("Case Manager");
+			var agentTypeResponse = ObjectHelper.Agent.ReadAgentTypeByName(AgentName);
 			var agentServerResponse = ObjectHelper.Agent.ReadAgentServerByAgentType(agentTypeResponse.ArtifactID);
 			AgentID = ObjectHelper.Agent.Create(agentTypeResponse.ArtifactID, agentServerResponse.ArtifactID);
 		}
