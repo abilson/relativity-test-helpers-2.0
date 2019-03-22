@@ -5,7 +5,6 @@ using Relativity.Test.Helpers.Exceptions;
 using System;
 using System.Linq;
 using System.Threading;
-
 using DTOs = kCura.Relativity.Client.DTOs;
 
 namespace Relativity.Test.Helpers.Objects.Application
@@ -13,6 +12,8 @@ namespace Relativity.Test.Helpers.Objects.Application
 	public class ApplicationHelper
 	{
 		private TestHelper _helper;
+
+		private bool ApplicationFound (QueryResultSet<DTOs.RelativityApplication> results) => results != null && results.TotalCount > 0;
 
 		public ApplicationHelper(TestHelper helper)
 		{
@@ -49,7 +50,7 @@ namespace Relativity.Test.Helpers.Objects.Application
 				throw new ApplicationInstallException($"There was an error installing the application {por.Message}");
 			}
 
-			return RetrieveWorkspaceID(appName);
+			return RetrieveAppID(workspaceId, appName);
 		}
 
 		private void PollForInstallSuccess(Guid processID)
@@ -74,29 +75,35 @@ namespace Relativity.Test.Helpers.Objects.Application
 			}
 		}
 
-		public Int32 RetrieveWorkspaceID(string applicationName)
+		public Int32 RetrieveAppID(int workspaceID, string applicationName)
 		{
 			int artifactID = 0;
 
 			Console.WriteLine("Querying for Application artifact id....");
-			var query = new Query<DTOs.RelativityApplication>();
+			var query = new Query<DTOs.RelativityApplication>
+			{
+				ArtifactTypeID = 1000014, // Relativity Application
+				Condition = new TextCondition(RelativityApplicationFieldNames.Name, TextConditionEnum.EqualTo, applicationName)
+		};
+
 			query.Fields.Add(new FieldValue(RelativityApplicationFieldNames.Name));
-			query.Condition = new TextCondition(RelativityApplicationFieldNames.Name, TextConditionEnum.EqualTo, applicationName);
 			QueryResultSet<DTOs.RelativityApplication> queryResultSet;
 
 			using (var client = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))
 			{
+				client.APIOptions.WorkspaceID = workspaceID;
 				queryResultSet = client.Repositories.RelativityApplication.Query(query);
 			}
-			if (queryResultSet != null)
+
+			if (ApplicationFound(queryResultSet))
 			{
 				var result = queryResultSet.Results.FirstOrDefault();
-				if (result == null || result.Artifact == null)
-				{
-					throw new ApplicationInstallException($"Could not find application with name {applicationName}.");
-				}
 				artifactID = result.Artifact.ArtifactID;
 				Console.WriteLine("Application artifactid is " + artifactID);
+			}
+			else
+			{
+				throw new ApplicationInstallException($"After install, could not find application with name {applicationName}");
 			}
 
 			Console.WriteLine("Exiting Import Application method.....");

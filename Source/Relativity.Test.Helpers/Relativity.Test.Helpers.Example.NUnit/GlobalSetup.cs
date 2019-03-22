@@ -24,22 +24,22 @@ namespace Relativity.Test.Helpers.Example
 
 		public string ClientName = "Example Client";
 		public string MatterName = "Example Matter";
-		public string AgentName = "Case Manager";
+		public string AgentName = "R1 Admin Manager Agent";
 		public string ApplicationName = "Test App";
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
 			Initialize();
-			CreateWorkspace();
-			InstallApplication();
+			//CreateWorkspace();
+			//InstallApplication();
 			CreateAgent();
 		}
 
 		[OneTimeTearDown]
 		public void OneTimeTearDown()
 		{
-			DeleteWorkspace();
+			//DeleteWorkspace();
 			DeleteAgent();
 		}
 

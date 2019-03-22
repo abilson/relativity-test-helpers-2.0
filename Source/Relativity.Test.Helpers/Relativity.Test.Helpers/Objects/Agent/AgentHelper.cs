@@ -8,6 +8,7 @@ using System;
 using Relativity.Services.Interfaces.Shared;
 using System.Collections.Generic;
 using System.Linq;
+using Relativity.Test.Helpers.Exceptions;
 
 namespace Relativity.Test.Helpers.Objects.Agent
 {
@@ -34,6 +35,11 @@ namespace Relativity.Test.Helpers.Objects.Agent
 
 			var selectedAgentType = agentTypes.FirstOrDefault(a => a.Name == name);
 
+			if (selectedAgentType == null)
+			{
+				throw new IntegrationTestException($"No agent by name: {name} was found.");
+			}
+
 			return selectedAgentType;
 		}
 
@@ -57,7 +63,7 @@ namespace Relativity.Test.Helpers.Objects.Agent
 		/// <param name="agentType"></param>
 		/// <param name="agentServerRef"></param>
 		/// <returns></returns>
-		public int Create(int agentTypeID, int agentServerID)
+		public int Create(int agentTypeID, int agentServerID, bool enabled = false)
 		{
 			int agentID = -1;
 
@@ -66,7 +72,7 @@ namespace Relativity.Test.Helpers.Objects.Agent
 			var agentToCreate = new AgentRequest()
 			{
 				AgentType = agentType,
-				Enabled = true,
+				Enabled = enabled,
 				Interval = 5,
 				AgentServer = agentServer,
 				Keywords = "Integration Test Agent",
@@ -85,6 +91,26 @@ namespace Relativity.Test.Helpers.Objects.Agent
 				agentID = agentManager.CreateAsync(-1, agentToCreate).Result;
 			}
 			return agentID;
+		}
+
+		public void Update(int agentID, int agentTypeID, int agentServerID, bool enabled = true)
+		{
+			var agentType = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = agentTypeID });
+			var agentServer = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = agentServerID });
+
+			var request = new AgentRequest
+			{
+				Enabled = enabled,
+				AgentServer = agentServer,
+				AgentType = agentType,
+				LoggingLevel = 1,
+				Interval = 5
+			};
+
+			using (var agentManager = _helper.GetServicesManager().CreateProxy<Services.Interfaces.Agent.IAgentManager>(ExecutionIdentity.System))
+			{
+				agentManager.UpdateAsync(-1, agentID, request).Wait();
+			}
 		}
 
 		/// <summary>

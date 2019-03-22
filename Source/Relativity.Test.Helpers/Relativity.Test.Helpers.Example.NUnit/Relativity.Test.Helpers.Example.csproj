@@ -132,9 +132,6 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LICENSE.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Relativity.Test.Helpers\Relativity.Test.Helpers.csproj">
       <Project>{500fcc47-7792-47e0-8308-ff7632c65cc9}</Project>
       <Name>Relativity.Test.Helpers</Name>
