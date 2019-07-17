@@ -32,9 +32,9 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 <<<<<<< HEAD
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
-=======
 [assembly: AssemblyVersion("5.0.0.1")]
 [assembly: AssemblyFileVersion("5.0.0.1")]
->>>>>>> relativitydev-merge
+=======
+[assembly: AssemblyVersion("6.5.0.1")]
+[assembly: AssemblyFileVersion("6.5.0.1")]
+>>>>>>> 63860dabb99f33e5129eec1b8a5ef53969dad0e7

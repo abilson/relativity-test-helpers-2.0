@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Relativity.Test.Helpers")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Relativity")]
 [assembly: AssemblyProduct("Relativity.Test.Helpers")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCopyright("Copyright © 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,9 +32,9 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 <<<<<<< HEAD
-[assembly: AssemblyVersion("4.5.0.1")]
-[assembly: AssemblyFileVersion("4.5.0.1")]
-=======
 [assembly: AssemblyVersion("5.0.0.1")]
 [assembly: AssemblyFileVersion("5.0.0.1")]
->>>>>>> relativitydev-merge
+=======
+[assembly: AssemblyVersion("6.6.0.1")]
+[assembly: AssemblyFileVersion("6.6.0.1")]
+>>>>>>> 63860dabb99f33e5129eec1b8a5ef53969dad0e7
