@@ -1,7 +1,6 @@
 ﻿using Relativity.API;
 using Relativity.Services.ServiceProxy;
 using Relativity.Test.Helpers.Configuration.Models;
-using Relativity.Test.Helpers.SharedTestHelpers;
 using System;
 
 namespace Relativity.Test.Helpers.ServiceFactory.Extentions
@@ -22,12 +21,6 @@ namespace Relativity.Test.Helpers.ServiceFactory.Extentions
 		{
 			// Get Kepler URL
 			Uri keplerUri = new Uri($"{configs.ServerHostBinding}://{configs.ServerHostName}/relativity.rest/api");
-			return keplerUri;
-		}
-		public static Uri GetKeplerUrl(this IServicesMgr svcmgr, AppConfigSettings alternateConfig)
-		{
-			// Get Kepler URL
-			Uri keplerUri = new Uri($"{alternateConfig.ServerBindingType}://{alternateConfig.RelativityInstanceAddress}/relativity.rest/api");
 			return keplerUri;
 		}
 	}
